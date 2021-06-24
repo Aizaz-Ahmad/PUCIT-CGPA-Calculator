@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <title>PUCIT CGPA CALCULATOR</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  aria-current="page"
+                  href="gpa-calculator.html"
+                  >GPA CALCULATOR</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="cgpa-calculator.html"
+                  >CGPA CALCULATOR</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="container-fluid mt-5" id="main">
+      <h2 class="text-center mb-5">PUCIT CGPA CALCULATOR</h2>
+      <div class="row justify-content-center">
+        <div
+          class="
+            col-11 col-md-8 col-lg-5
+            px-3
+            rounded
+            shadow
+            bg-dark
+            text-white
+          "
+          :class="semesterDiv || !resultDiv ? 'py-5' : 'pb-5'"
+        >
+          <div v-if="resultDiv">
+            <div v-if="semesterDiv">
+              <h5 class="text-center text-white mb-4">No. of Semesters</h5>
+              <div class="container-fluid">
+                <div class="row justify-content-center">
+                  <div class="col-11 col-sm-8">
+                    <form @submit.prevent="generateSemesters">
+                      <input
+                        type="number"
+                        class="form-control"
+                        min="1"
+                        max="8"
+                        v-model="noOfSemester"
+                        required
+                      />
+                      <button class="btn btn-light mt-3 w-50 mx-auto d-block">
+                        Continue
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <h4
+                class="
+                  py-4
+                  text-center text-white
+                  fw-bold
+                  border-bottom border-white
+                "
+              >
+                {{semester[currentSemester - 1]}} Semester
+              </h4>
+
+              <div class="mt-3" v-if="semesters[currentSemester - 1].options">
+                <p class="fw-bold text-white mb-0">Choose Appropriate Option</p>
+                <small class="text-white"
+                  >If you already know GPA of specific semester then you can use
+                  first option, otherwise you can calculate it using second
+                  option</small
+                >
+                <div class="d-flex flex-wrap">
+                  <div>
+                    <input
+                      type="radio"
+                      name="option"
+                      class="mt-3"
+                      id="enter"
+                      value="false"
+                      v-model="semesters[currentSemester - 1].isCalculateGPA"
+                    />
+                    <label for="enter" class="ms-3 d-inline-block"
+                      >Enter GPA</label
+                    >
+                  </div>
+                  <div class="ms-4">
+                    <input
+                      type="radio"
+                      name="option"
+                      id="calc"
+                      class="mt-3"
+                      value="true"
+                      v-model="semesters[currentSemester - 1].isCalculateGPA"
+                    />
+                    <label for="calc" class="ms-3 d-inline-block"
+                      >Calculate GPA</label
+                    >
+                  </div>
+                </div>
+                <button class="btn btn-light w-100 mt-4" @click="continueF">
+                  Continue
+                </button>
+              </div>
+              <div v-else-if="!semesters[currentSemester - 1].isCalculateGPA">
+                <form @submit.prevent="nextSem">
+                  <div class="form-row mb-4">
+                    <label for="gpa" class="mb-2">Enter GPA</label>
+                    <input
+                      type="text"
+                      id="gpa"
+                      class="form-control"
+                      required
+                      v-model="semesters[currentSemester - 1].gpa"
+                      pattern="[1-4](.[0-9]{1,2})?"
+                    />
+                  </div>
+                  <div class="form-row mb-4">
+                    <label for="credit">Enter Total Credit Hours</label>
+                    <small class="mb-2 d-block"
+                      >(Sum of Credit Hour of each Course in this
+                      Semester)</small
+                    >
+                    <input
+                      type="number"
+                      id="credit"
+                      class="form-control"
+                      v-model="semesters[currentSemester - 1].creditHours"
+                      required
+                    />
+                  </div>
+                  <button class="btn btn-light w-100">Next</button>
+                </form>
+              </div>
+              <div v-else>
+                <div v-if="subjectDiv">
+                  <h5 class="text-center text-white mb-4">
+                    No. of Subjects (Including Labs)
+                  </h5>
+                  <div class="container-fluid">
+                    <div class="row justify-content-center">
+                      <div class="col-11 col-sm-8">
+                        <form @submit="GenerateTable">
+                          <input
+                            type="number"
+                            class="form-control"
+                            min="1"
+                            v-model="semesters[currentSemester - 1].noOfSubjects"
+                            required
+                          />
+                          <button
+                            class="btn btn-light mt-3 w-50 mx-auto d-block"
+                          >
+                            Continue
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-else>
+                  <h4 class="text-center text-white mb-4">
+                    Enter Each Subjects Marks
+                  </h4>
+                  <form @submit="calculateGPA">
+                    <table class="table table-light w-100 rounded">
+                      <thead>
+                        <tr>
+                          <td>Marks Obtained</td>
+                          <td>Credit Hrs.</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="row in semesters[currentSemester - 1].gradePoints"
+                          :key="row.id"
+                        >
+                          <td>
+                            <input
+                              type="number"
+                              class="form-control"
+                              v-model="row.marksObtained"
+                              min="0"
+                              max="100"
+                              required
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              class="form-control"
+                              v-model="row.creditHours"
+                              min="1"
+                              max="3"
+                              required
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button class="btn btn-light w-100">Calculate GPA</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <h4 class="text-center text-white mb-4">Result</h4>
+            <ul class="list-style-none mt-3">
+              <li v-for="i in parseInt(noOfSemester)">
+                <span class="fw-bold"
+                  >Your {{semester[i - 1]}} Semester GPA is: {{semesters[i -
+                  1].gpa}}</span
+                >
+              </li>
+            </ul>
+            <h5 class="text-center text-white mb-5">
+              Your CGPA is: {{ cgpa }}
+            </h5>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-light" @click="reload">Start Again</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+  <script type="application/javascript" src="js/bootstrap.min.js"></script>
+  <script type="application/javascript" src="js/vue.js"></script>
+  <script type="application/javascript" src="js/script.js"></script>
+  <script>
+    const App = {
+      data() {
+        return {
+          semester: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'],
+          noOfSemester: null,
+          semesterDiv: true,
+          subjectDiv: true,
+          currentSemester: 1,
+          semesters: [],
+          resultDiv: true,
+          cgpa: null,
+        };
+      },
+
+      methods: {
+        generateSemesters(e) {
+          e.preventDefault();
+          for (let i = 0; i < parseInt(this.noOfSemester); i++) {
+            this.semesters.push({
+              semesterID: `semester${i}`,
+              noOfSubjects: null,
+              gradePoints: [],
+              gpa: null,
+              creditHours: null,
+              isCalculateGPA: false,
+              options: true,
+            });
+          }
+          this.semesterDiv = false;
+        },
+        continueF() {
+          this.semesters[this.currentSemester - 1].options = false;
+        },
+        GenerateTable(e) {
+          e.preventDefault();
+          for (
+            let i = 0;
+            i < this.semesters[this.currentSemester - 1].noOfSubjects;
+            i++
+          ) {
+            this.semesters[this.currentSemester - 1].gradePoints.push({
+              id: `row${i}`,
+              marksObtained: null,
+              creditHours: null,
+            });
+          }
+          this.subjectDiv = false;
+        },
+        calculateGPA(e) {
+          e.preventDefault();
+          let sum = 0.0;
+          let creditHours = 0;
+          this.semesters[this.currentSemester - 1].gradePoints.forEach(
+            gradePoint => {
+              let gp = getGP(parseFloat(gradePoint.marksObtained));
+              sum += gp * parseInt(gradePoint.creditHours);
+              creditHours += parseInt(gradePoint.creditHours);
+            }
+          );
+          this.semesters[this.currentSemester - 1].gpa = (
+            sum / creditHours
+          ).toFixed(2);
+          this.semesters[this.currentSemester - 1].creditHours = creditHours;
+          this.nextSem();
+        },
+        nextSem() {
+          this.currentSemester++;
+          this.subjectDiv = true;
+          if (this.currentSemester > this.noOfSemester) {
+            this.calculateCGPA();
+            this.resultDiv = false;
+          }
+        },
+        calculateCGPA() {
+          let sum = 0.0;
+          let totalCreditHours = 0;
+          this.semesters.forEach(semester => {
+            sum += parseFloat(semester.gpa) * parseInt(semester.creditHours);
+            totalCreditHours += parseInt(semester.creditHours);
+          });
+          this.cgpa = (sum / totalCreditHours).toFixed(2);
+        },
+        reload() {
+          window.location.reload();
+        },
+      },
+    };
+    Vue.createApp(App).mount('body');
+  </script>
+</html>
