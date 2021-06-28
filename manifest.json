@@ -3,7 +3,7 @@
     "background_color": "#f8f4f0",
     "display": "minimal-ui",
     "scope": "/PUCIT-CGPA-Calculator/",
-    "start_url": "//PUCIT-CGPA-Calculator/",
+    "start_url": "/PUCIT-CGPA-Calculator/",
     "name": "PUCIT GPA / CGPA CALCULATOR",
     "short_name": "CGPA CALC",
     "description": "CALCULATOR TO CALCULATE BOTH GPA AND CGPA OF PUCIT",
