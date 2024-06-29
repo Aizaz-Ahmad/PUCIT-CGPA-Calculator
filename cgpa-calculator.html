@@ -175,6 +175,7 @@
                       class="form-control"
                       v-model="semesters[currentSemester - 1].creditHours"
                       required
+                      step="0.5"
                     />
                   </div>
                   <button class="btn btn-light w-100">Next</button>
@@ -238,8 +239,9 @@
                               type="number"
                               class="form-control"
                               v-model="row.creditHours"
-                              min="1"
+                              min="0"
                               max="3"
+                              step="0.5"
                               required
                             />
                           </td>
@@ -344,8 +346,8 @@
           this.semesters[this.currentSemester - 1].gradePoints.forEach(
             gradePoint => {
               let gp = getGP(parseFloat(gradePoint.marksObtained));
-              sum += gp * parseInt(gradePoint.creditHours);
-              creditHours += parseInt(gradePoint.creditHours);
+              sum += gp * parseFloat(gradePoint.creditHours);
+              creditHours += parseFloat(gradePoint.creditHours);
             }
           );
           this.semesters[this.currentSemester - 1].gpa = (
@@ -374,8 +376,8 @@
           let totalCreditHours = 0;
           this.semesters.forEach((semester, i) => {
             if (i >= this.currentSemester - 1) return;
-            sum += parseFloat(semester.gpa) * parseInt(semester.creditHours);
-            totalCreditHours += parseInt(semester.creditHours);
+            sum += parseFloat(semester.gpa) * parseFloat(semester.creditHours);
+            totalCreditHours += parseFloat(semester.creditHours);
           });
           this.cgpa = (sum / totalCreditHours).toFixed(2);
         },

@@ -114,8 +114,9 @@
                         type="number"
                         class="form-control"
                         v-model="row.creditHours"
-                        min="1"
+                        min="0"
                         max="3"
+                        step="0.5"
                         required
                       />
                     </td>
@@ -176,8 +177,8 @@
           let creditHours = 0;
           this.gradePoints.forEach(gradePoint => {
             let gp = getGP(parseFloat(gradePoint.marksObtained));
-            sum += gp * parseInt(gradePoint.creditHours);
-            creditHours += parseInt(gradePoint.creditHours);
+            sum += gp * parseFloat(gradePoint.creditHours);
+            creditHours += parseFloat(gradePoint.creditHours);
           });
           this.gpa = (sum / creditHours).toFixed(2);
           this.resultDiv = true;
